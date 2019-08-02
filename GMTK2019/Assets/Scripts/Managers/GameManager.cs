@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 {
     #region	Fields
     public static GameManager instance = null;
-
+    public float varJ;
     public enum GameState
     {
         Playing,
