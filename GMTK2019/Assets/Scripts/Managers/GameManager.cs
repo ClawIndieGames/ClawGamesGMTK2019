@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public float varF;
     public float varJ;
     public float f;
+    public float z;
     public enum GameState
     {
         Playing,
