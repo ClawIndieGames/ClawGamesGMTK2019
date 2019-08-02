@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance = null;
     public float varF;
     public float varJ;
+    public float f;
     public enum GameState
     {
         Playing,
