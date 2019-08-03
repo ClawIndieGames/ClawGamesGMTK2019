@@ -44,10 +44,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] Transform topRaycastOrigin;
     [SerializeField] Transform midRaycastOrigin;
-    [SerializeField] Transform bottomRaycastOrigin;
-    //[SerializeField] Transform topLeftRaycastOrigin;
-    //[SerializeField] Transform midLeftRaycastOrigin;
-    //[SerializeField] Transform bottomLeftRaycastOrigin;
+    [SerializeField] Transform bottomRaycastOrigin;    
 
     public static event Action<float> OnPlayerLosingHealth = delegate { };
     public static event Action<float> OnPlayerHealing = delegate { };
@@ -112,14 +109,22 @@ public class PlayerController : MonoBehaviour
         if (playerState == PlayerState.Running)
         {
             animator.SetBool("IsRunning", true);
-        }        
+        }
     }
 
     void FixedUpdate()
     {
+        
         if (playerState == PlayerState.Running)
         {
-            rb.velocity = new Vector2(movementSpeed, rb.velocity.y);
+            if (isFacingRight)
+            {
+                rb.velocity = new Vector2(movementSpeed, rb.velocity.y);
+            }
+            else
+            {
+                rb.velocity = new Vector2(-movementSpeed, rb.velocity.y);
+            }
         }
     }
 
@@ -168,7 +173,7 @@ public class PlayerController : MonoBehaviour
 
     void Die()
     {
-        //print("you died");
+        print("you died");
     }
 
     void Flip()
@@ -193,12 +198,10 @@ public class PlayerController : MonoBehaviour
         {
             if (isFacingRight)
             {
-                print("right wall");
                 OnAttatchToWall(WallAttatchedState.Right);
             }
             else
             {
-                print("left wall");
                 OnAttatchToWall(WallAttatchedState.Left);
             }
         }        
@@ -225,7 +228,6 @@ public class PlayerController : MonoBehaviour
 
     bool IsValidWallRideRaycast(RaycastHit2D ray)
     {
-        //return false;
         if (ray.transform != null)
         {
             return ray.transform.CompareTag("VerticalWall");
@@ -251,6 +253,11 @@ public class PlayerController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("VerticalWall"))
         {
+            if (playerState == PlayerState.Running)
+            {
+                Die();
+            }
+
             DrawRaycasts();
         }
     }
