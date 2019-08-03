@@ -11,7 +11,8 @@ public class PlayerController : MonoBehaviour
     {
         Running,
         Jumping,
-        WallRide
+        WallRide,
+        Death
     }
 
     public enum WallAttatchedState
@@ -99,11 +100,6 @@ public class PlayerController : MonoBehaviour
         {
             Die();
         }
-
-        if (playerState == PlayerState.Running)
-        {
-            animator.SetBool("IsRunning", true);
-        }
     }
 
     void FixedUpdate()
@@ -146,6 +142,12 @@ public class PlayerController : MonoBehaviour
                 animator.SetBool("IsWallRiding", true);
                 break;
 
+            case PlayerState.Death:
+                animator.SetBool("IsDead", true);
+                animator.SetBool("IsJumping", false);
+                animator.SetBool("IsRunning", false);
+                animator.SetBool("IsWallRiding", false);
+                break;
             default:
                 break;
         }
@@ -188,7 +190,8 @@ public class PlayerController : MonoBehaviour
 
     void Die()
     {
-        Destroy(gameObject);
+        ChangePlayerState(PlayerState.Death);
+        Destroy(gameObject, 1f);
     }
 
     void Flip()
@@ -247,6 +250,11 @@ public class PlayerController : MonoBehaviour
 
         return false;
     }
+
+    void FinishLevel()
+    {
+
+    }
     #endregion
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -275,6 +283,11 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Obstacle"))
         {
             Die();
+        }
+
+        if (collision.gameObject.CompareTag("LevelGoal"))
+        {
+            FinishLevel();
         }
     }
 
