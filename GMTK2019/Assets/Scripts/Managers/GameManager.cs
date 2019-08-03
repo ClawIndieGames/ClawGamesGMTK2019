@@ -110,6 +110,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene("prototype");
+        }
+    }
     private void OnApplicationQuit()
     {
         // If the game has Google integration the  PlayGamesManager LOGOUT should be called here

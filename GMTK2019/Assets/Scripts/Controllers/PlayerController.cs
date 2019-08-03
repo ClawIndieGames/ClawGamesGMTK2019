@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -64,20 +65,13 @@ public class PlayerController : MonoBehaviour
         {
             if (!isFacingRight)
                 Flip();
-
-            animator.SetBool("IsWallRiding", true);
         }
         else if (wallAttatchedState == WallAttatchedState.Right)
         {
             if (isFacingRight)
                 Flip();
-
-            animator.SetBool("IsWallRiding", true);
         }
-        else if (wallAttatchedState == WallAttatchedState.None)
-        {
-            animator.SetBool("IsWallRiding", false);
-        }
+        
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -131,6 +125,30 @@ public class PlayerController : MonoBehaviour
     void ChangePlayerState(PlayerState stateToApply)
     {
         playerState = stateToApply;
+
+        switch (stateToApply)
+        {
+            case PlayerState.Running:
+                animator.SetBool("IsJumping", false);
+                animator.SetBool("IsRunning", true);
+                animator.SetBool("IsWallRiding", false);
+                break;
+
+            case PlayerState.Jumping:
+                animator.SetBool("IsJumping", true);
+                animator.SetBool("IsRunning", false);
+                animator.SetBool("IsWallRiding", false);
+                break;
+
+            case PlayerState.WallRide:
+                animator.SetBool("IsJumping", false);
+                animator.SetBool("IsRunning", false);
+                animator.SetBool("IsWallRiding", true);
+                break;
+
+            default:
+                break;
+        }
     }
 
     void ChangeWallAttatchedState(WallAttatchedState wall)
@@ -142,10 +160,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!canJump)
             return;
-
-        animator.SetBool("IsJumping", true);
-        animator.SetBool("IsRunning", false);
-        animator.SetBool("IsWallRiding", false);
+       
         ChangePlayerState(PlayerState.Jumping);
         canJump = false;
 
@@ -173,7 +188,7 @@ public class PlayerController : MonoBehaviour
 
     void Die()
     {
-        print("you died");
+        Destroy(gameObject);
     }
 
     void Flip()
@@ -213,9 +228,6 @@ public class PlayerController : MonoBehaviour
         ChangeWallAttatchedState(wall);
         ChangePlayerState(PlayerState.WallRide);
 
-        animator.SetBool("IsRunning", false);
-        animator.SetBool("IsJumping", false);
-
         if (wall == WallAttatchedState.Right)
         {
             Flip();
@@ -243,7 +255,6 @@ public class PlayerController : MonoBehaviour
         {
             canJump = true;
             isLosingHealth = true;
-            animator.SetBool("IsJumping", false);
 
             if (wallAttatchedState == WallAttatchedState.None)
             {
@@ -260,6 +271,11 @@ public class PlayerController : MonoBehaviour
 
             DrawRaycasts();
         }
+
+        if (collision.gameObject.CompareTag("Obstacle"))
+        {
+            Die();
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -273,6 +289,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("VerticalWall"))
         {            
             ChangeWallAttatchedState(WallAttatchedState.None);
+            ChangePlayerState(PlayerState.Jumping);
         }
     }
 }
