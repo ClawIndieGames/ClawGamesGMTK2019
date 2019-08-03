@@ -12,7 +12,8 @@ public class PlayerController : MonoBehaviour
         Running,
         Jumping,
         WallRide,
-        Dead
+        Dead,
+        Win
     }
 
     public enum WallAttatchedState
@@ -41,6 +42,7 @@ public class PlayerController : MonoBehaviour
     bool canJump;
     bool isLosingHealth;
     bool isFacingRight = true;
+    bool isInvincible;
 
     [SerializeField] Animator animator;
 
@@ -149,6 +151,13 @@ public class PlayerController : MonoBehaviour
                 animator.SetBool("IsRunning", false);
                 animator.SetBool("IsWallRiding", false);
                 break;
+
+            case PlayerState.Win:
+                animator.SetBool("IsJumping", false);
+                animator.SetBool("IsRunning", false);
+                animator.SetBool("IsWallRiding", false);
+                break;
+
             default:
                 break;
         }
@@ -193,6 +202,9 @@ public class PlayerController : MonoBehaviour
 
     void Die()
     {
+        if (isInvincible)
+            return;
+
         ChangePlayerState(PlayerState.Dead);
         Destroy(gameObject, 1f);
     }
@@ -273,6 +285,7 @@ public class PlayerController : MonoBehaviour
 
     void FinishLevel()
     {
+        isInvincible = true;
         OnPlayerFinishLevel();
     }
 
@@ -317,6 +330,9 @@ public class PlayerController : MonoBehaviour
 
         if (collisionObject.CompareTag("LevelGoal") && playerState != PlayerState.Dead)
         {
+            ChangePlayerState(PlayerState.Win);
+            rb.AddForce(Vector2.right * 40, ForceMode2D.Impulse);
+            collisionObject.GetComponent<Rigidbody2D>().AddForce(Vector2.right * 40,ForceMode2D.Impulse);
             FinishLevel();
         }
     }
