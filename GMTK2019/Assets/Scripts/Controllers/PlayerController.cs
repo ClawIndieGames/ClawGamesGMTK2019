@@ -42,12 +42,12 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] Animator animator;
 
-    [SerializeField] Transform topRightRaycastOrigin;
-    [SerializeField] Transform midRightRaycastOrigin;
-    [SerializeField] Transform bottomRightRaycastOrigin;
-    [SerializeField] Transform topLeftRaycastOrigin;
-    [SerializeField] Transform midLeftRaycastOrigin;
-    [SerializeField] Transform bottomLeftRaycastOrigin;
+    [SerializeField] Transform topRaycastOrigin;
+    [SerializeField] Transform midRaycastOrigin;
+    [SerializeField] Transform bottomRaycastOrigin;
+    //[SerializeField] Transform topLeftRaycastOrigin;
+    //[SerializeField] Transform midLeftRaycastOrigin;
+    //[SerializeField] Transform bottomLeftRaycastOrigin;
 
     public static event Action<float> OnPlayerLosingHealth = delegate { };
     public static event Action<float> OnPlayerHealing = delegate { };
@@ -112,10 +112,7 @@ public class PlayerController : MonoBehaviour
         if (playerState == PlayerState.Running)
         {
             animator.SetBool("IsRunning", true);
-        }
-        Debug.DrawRay(topRightRaycastOrigin.position, wallRideRaycastVector, Color.red);
-        Debug.DrawRay(midRightRaycastOrigin.position, wallRideRaycastVector, Color.red);
-        Debug.DrawRay(bottomRightRaycastOrigin.position, wallRideRaycastVector, Color.red);
+        }        
     }
 
     void FixedUpdate()
@@ -142,6 +139,7 @@ public class PlayerController : MonoBehaviour
             return;
 
         animator.SetBool("IsJumping", true);
+        animator.SetBool("IsRunning", false);
         animator.SetBool("IsWallRiding", false);
         ChangePlayerState(PlayerState.Jumping);
         canJump = false;
@@ -153,11 +151,11 @@ public class PlayerController : MonoBehaviour
                 directionToJump = new Vector2(rb.velocity.x, jumpForce);
                 break;
 
-            case WallAttatchedState.Left:
+            case WallAttatchedState.Left:                
                 directionToJump = new Vector2(10, jumpForce);
                 break;
 
-            case WallAttatchedState.Right:
+            case WallAttatchedState.Right:                
                 directionToJump = new Vector2(-10, jumpForce);
                 break;
 
@@ -182,43 +180,47 @@ public class PlayerController : MonoBehaviour
 
     void DrawRaycasts()
     {
-        // Debug raycasts
-        
-        //Debug.DrawRay(topLeftRaycastOrigin.position, -wallRideRaycastVector, Color.red);
-        //Debug.DrawRay(midLeftRaycastOrigin.position, -wallRideRaycastVector, Color.red);
-        //Debug.DrawRay(bottomLeftRaycastOrigin.position, -wallRideRaycastVector, Color.red);
+        var vectorDirectionToRaycast = isFacingRight ? wallRideRaycastVector : - wallRideRaycastVector;
 
-        var topRightHit = Physics2D.Raycast(topRightRaycastOrigin.position, wallRideRaycastVector, wallRideRaycastVector.x);
-        var midRightHit = Physics2D.Raycast(midRightRaycastOrigin.position, wallRideRaycastVector, wallRideRaycastVector.x);
-        var bottomRightHit = Physics2D.Raycast(bottomRightRaycastOrigin.position, wallRideRaycastVector, wallRideRaycastVector.x);
+        var topHit = Physics2D.Raycast(topRaycastOrigin.position, wallRideRaycastVector, vectorDirectionToRaycast.x);
+        var midHit = Physics2D.Raycast(midRaycastOrigin.position, wallRideRaycastVector, vectorDirectionToRaycast.x);
+        var bottomHit = Physics2D.Raycast(bottomRaycastOrigin.position, wallRideRaycastVector, vectorDirectionToRaycast.x);
 
-        var topLeftHit = Physics2D.Raycast(topLeftRaycastOrigin.position, -wallRideRaycastVector, -wallRideRaycastVector.x);
-        var midLeftHit = Physics2D.Raycast(midLeftRaycastOrigin.position, -wallRideRaycastVector, -wallRideRaycastVector.x);
-        var bottomLeftHit = Physics2D.Raycast(bottomLeftRaycastOrigin.position, -wallRideRaycastVector, -wallRideRaycastVector.x);
-
-        if ((topRightHit || midRightHit || bottomRightHit)
-            && (IsValidWallRideRaycast(topRightHit)
-                || IsValidWallRideRaycast(midRightHit)
-                || IsValidWallRideRaycast(bottomRightHit)))
+        if ((topHit || midHit || bottomHit)
+            && (IsValidWallRideRaycast(topHit)
+                || IsValidWallRideRaycast(midHit)
+                || IsValidWallRideRaycast(bottomHit)))
         {
-
-            OnAttatchToWall(WallAttatchedState.Right);
-        }
-        else if ((topLeftHit || midLeftHit || bottomLeftHit)
-            && (IsValidWallRideRaycast(topLeftHit)
-                || IsValidWallRideRaycast(midLeftHit)
-                || IsValidWallRideRaycast(bottomLeftHit)))
-        {
-            OnAttatchToWall(WallAttatchedState.Left);
-        }
+            if (isFacingRight)
+            {
+                print("right wall");
+                OnAttatchToWall(WallAttatchedState.Right);
+            }
+            else
+            {
+                print("left wall");
+                OnAttatchToWall(WallAttatchedState.Left);
+            }
+        }        
     }
 
     void OnAttatchToWall(WallAttatchedState wall)
     {
         canJump = true;
         ChangeWallAttatchedState(wall);
+        ChangePlayerState(PlayerState.WallRide);
+
         animator.SetBool("IsRunning", false);
         animator.SetBool("IsJumping", false);
+
+        if (wall == WallAttatchedState.Right)
+        {
+            Flip();
+        }
+        else if (wall == WallAttatchedState.Left)
+        {
+            Flip();
+        }
     }
 
     bool IsValidWallRideRaycast(RaycastHit2D ray)
