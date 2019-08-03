@@ -333,6 +333,7 @@ public class PlayerController : MonoBehaviour
             if (collisionObject.CompareTag("MousePlatform"))
             {
                 isLosingHealth = false;
+                transform.parent = null;
             }
         }
 
