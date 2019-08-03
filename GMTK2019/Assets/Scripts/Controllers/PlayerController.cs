@@ -63,8 +63,6 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        DrawRaycasts();
-
         if (wallAttatchedState == WallAttatchedState.Left)
         {
             if (!isFacingRight)
@@ -115,11 +113,14 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetBool("IsRunning", true);
         }
+        Debug.DrawRay(topRightRaycastOrigin.position, wallRideRaycastVector, Color.red);
+        Debug.DrawRay(midRightRaycastOrigin.position, wallRideRaycastVector, Color.red);
+        Debug.DrawRay(bottomRightRaycastOrigin.position, wallRideRaycastVector, Color.red);
     }
 
     void FixedUpdate()
     {
-        if (playerState == PlayerState.Running && wallAttatchedState == WallAttatchedState.None)
+        if (playerState == PlayerState.Running)
         {
             rb.velocity = new Vector2(movementSpeed, rb.velocity.y);
         }
@@ -141,9 +142,30 @@ public class PlayerController : MonoBehaviour
             return;
 
         animator.SetBool("IsJumping", true);
+        animator.SetBool("IsWallRiding", false);
         ChangePlayerState(PlayerState.Jumping);
         canJump = false;
-        rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+
+        var directionToJump = Vector2.zero;
+        switch (wallAttatchedState)
+        {
+            case WallAttatchedState.None:
+                directionToJump = new Vector2(rb.velocity.x, jumpForce);
+                break;
+
+            case WallAttatchedState.Left:
+                directionToJump = new Vector2(10, jumpForce);
+                break;
+
+            case WallAttatchedState.Right:
+                directionToJump = new Vector2(-10, jumpForce);
+                break;
+
+            default:
+                break;
+        }
+
+        rb.velocity = directionToJump;
     }
 
     void Die()
@@ -161,9 +183,7 @@ public class PlayerController : MonoBehaviour
     void DrawRaycasts()
     {
         // Debug raycasts
-        //Debug.DrawRay(topRightRaycastOrigin.position, wallRideRaycastVector, Color.red);
-        //Debug.DrawRay(midRightRaycastOrigin.position, wallRideRaycastVector, Color.red);
-        //Debug.DrawRay(bottomRightRaycastOrigin.position, wallRideRaycastVector, Color.red);
+        
         //Debug.DrawRay(topLeftRaycastOrigin.position, -wallRideRaycastVector, Color.red);
         //Debug.DrawRay(midLeftRaycastOrigin.position, -wallRideRaycastVector, Color.red);
         //Debug.DrawRay(bottomLeftRaycastOrigin.position, -wallRideRaycastVector, Color.red);
@@ -172,35 +192,33 @@ public class PlayerController : MonoBehaviour
         var midRightHit = Physics2D.Raycast(midRightRaycastOrigin.position, wallRideRaycastVector, wallRideRaycastVector.x);
         var bottomRightHit = Physics2D.Raycast(bottomRightRaycastOrigin.position, wallRideRaycastVector, wallRideRaycastVector.x);
 
-        var topLeftHit = Physics2D.Raycast(topLeftRaycastOrigin.position, -wallRideRaycastVector, wallRideRaycastVector.x);
-        var midLeftHit = Physics2D.Raycast(midLeftRaycastOrigin.position, -wallRideRaycastVector, wallRideRaycastVector.x);
-        var bottomLeftHit = Physics2D.Raycast(bottomLeftRaycastOrigin.position, -wallRideRaycastVector, wallRideRaycastVector.x);
+        var topLeftHit = Physics2D.Raycast(topLeftRaycastOrigin.position, -wallRideRaycastVector, -wallRideRaycastVector.x);
+        var midLeftHit = Physics2D.Raycast(midLeftRaycastOrigin.position, -wallRideRaycastVector, -wallRideRaycastVector.x);
+        var bottomLeftHit = Physics2D.Raycast(bottomLeftRaycastOrigin.position, -wallRideRaycastVector, -wallRideRaycastVector.x);
 
-        if (topRightHit || midRightHit || bottomRightHit
+        if ((topRightHit || midRightHit || bottomRightHit)
             && (IsValidWallRideRaycast(topRightHit)
                 || IsValidWallRideRaycast(midRightHit)
                 || IsValidWallRideRaycast(bottomRightHit)))
         {
+
             OnAttatchToWall(WallAttatchedState.Right);
         }
-        else if (topLeftHit || midLeftHit || bottomLeftHit
+        else if ((topLeftHit || midLeftHit || bottomLeftHit)
             && (IsValidWallRideRaycast(topLeftHit)
                 || IsValidWallRideRaycast(midLeftHit)
                 || IsValidWallRideRaycast(bottomLeftHit)))
         {
             OnAttatchToWall(WallAttatchedState.Left);
         }
-        else
-        {
-            ChangeWallAttatchedState(WallAttatchedState.None);
-        }
     }
 
     void OnAttatchToWall(WallAttatchedState wall)
     {
+        canJump = true;
         ChangeWallAttatchedState(wall);
         animator.SetBool("IsRunning", false);
-        animator.SetBool("IsJumping", false);        
+        animator.SetBool("IsJumping", false);
     }
 
     bool IsValidWallRideRaycast(RaycastHit2D ray)
@@ -222,7 +240,16 @@ public class PlayerController : MonoBehaviour
             canJump = true;
             isLosingHealth = true;
             animator.SetBool("IsJumping", false);
-            ChangePlayerState(PlayerState.Running);
+
+            if (wallAttatchedState == WallAttatchedState.None)
+            {
+                ChangePlayerState(PlayerState.Running);
+            }
+        }
+
+        if (collision.gameObject.CompareTag("VerticalWall"))
+        {
+            DrawRaycasts();
         }
     }
 
@@ -232,6 +259,11 @@ public class PlayerController : MonoBehaviour
         {
             canJump = false;
             isLosingHealth = false;
+        }
+
+        if (collision.gameObject.CompareTag("VerticalWall"))
+        {            
+            ChangeWallAttatchedState(WallAttatchedState.None);
         }
     }
 }
