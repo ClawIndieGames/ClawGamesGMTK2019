@@ -32,6 +32,7 @@ public class PlayerController : MonoBehaviour
 
     float currentHealth;
 
+    [SerializeField] float maxVelocityY;
     [SerializeField] float jumpForce;
     [SerializeField] float movementSpeed;
     [SerializeField] float damageDoneByPlatform;
@@ -119,6 +120,12 @@ public class PlayerController : MonoBehaviour
                 rb.velocity = new Vector2(-movementSpeed, rb.velocity.y);
             }
         }
+
+        if (rb.velocity.y > maxVelocityY)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, maxVelocityY);
+        }
+
     }
 
     void ChangePlayerState(PlayerState stateToApply)
