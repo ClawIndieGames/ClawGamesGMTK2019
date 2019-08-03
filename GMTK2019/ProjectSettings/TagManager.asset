@@ -8,6 +8,7 @@ TagManager:
   - VerticalWall
   - Obstacle
   - LevelGoal
+  - MousePlatform
   layers:
   - Default
   - TransparentFX

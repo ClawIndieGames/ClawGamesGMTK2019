@@ -46,7 +46,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] Transform topRaycastOrigin;
     [SerializeField] Transform midRaycastOrigin;
-    [SerializeField] Transform bottomRaycastOrigin;    
+    [SerializeField] Transform bottomRaycastOrigin;
 
     public static event Action<float> OnPlayerLosingHealth = delegate { };
     public static event Action<float> OnPlayerHealing = delegate { };
@@ -73,7 +73,7 @@ public class PlayerController : MonoBehaviour
             if (isFacingRight)
                 Flip();
         }
-        
+
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -105,7 +105,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        
+
         if (playerState == PlayerState.Running)
         {
             if (isFacingRight)
@@ -163,7 +163,9 @@ public class PlayerController : MonoBehaviour
     {
         if (!canJump)
             return;
-       
+
+        transform.parent = null;
+
         ChangePlayerState(PlayerState.Jumping);
         canJump = false;
 
@@ -174,11 +176,11 @@ public class PlayerController : MonoBehaviour
                 directionToJump = new Vector2(rb.velocity.x, jumpForce);
                 break;
 
-            case WallAttatchedState.Left:                
+            case WallAttatchedState.Left:
                 directionToJump = new Vector2(10, jumpForce);
                 break;
 
-            case WallAttatchedState.Right:                
+            case WallAttatchedState.Right:
                 directionToJump = new Vector2(-10, jumpForce);
                 break;
 
@@ -204,7 +206,7 @@ public class PlayerController : MonoBehaviour
 
     void DrawRaycasts()
     {
-        var vectorDirectionToRaycast = isFacingRight ? wallRideRaycastVector : - wallRideRaycastVector;
+        var vectorDirectionToRaycast = isFacingRight ? wallRideRaycastVector : -wallRideRaycastVector;
 
         var topHit = Physics2D.Raycast(topRaycastOrigin.position, wallRideRaycastVector, vectorDirectionToRaycast.x);
         var midHit = Physics2D.Raycast(midRaycastOrigin.position, wallRideRaycastVector, vectorDirectionToRaycast.x);
@@ -223,7 +225,23 @@ public class PlayerController : MonoBehaviour
             {
                 OnAttatchToWall(WallAttatchedState.Left);
             }
-        }        
+
+            if (midHit.transform != null
+                && midHit.transform.CompareTag("MousePlatform"))
+            {
+                transform.parent = midHit.transform;
+            }
+            else if (topHit.transform != null
+                && topHit.transform.CompareTag("MousePlatform"))
+            {
+                transform.parent = topHit.transform;
+            }
+            else if (bottomHit.transform != null
+                && bottomHit.transform.CompareTag("MousePlatform"))
+            {
+                transform.parent = bottomHit.transform;
+            }
+        }
     }
 
     void OnAttatchToWall(WallAttatchedState wall)
@@ -246,7 +264,8 @@ public class PlayerController : MonoBehaviour
     {
         if (ray.transform != null)
         {
-            return ray.transform.CompareTag("VerticalWall");
+            return ray.transform.CompareTag("VerticalWall")
+                || ray.transform.CompareTag("MousePlatform");
         }
 
         return false;
@@ -261,33 +280,42 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        var collisionObject = collision.gameObject;
+
+        if (collisionObject.CompareTag("Ground")
+            || collision.gameObject.CompareTag("MousePlatform"))
         {
             canJump = true;
-            isLosingHealth = true;
 
             if (wallAttatchedState == WallAttatchedState.None)
             {
                 ChangePlayerState(PlayerState.Running);
             }
+
+            if (collisionObject.CompareTag("MousePlatform"))
+            {
+                isLosingHealth = true;
+            }
         }
 
-        if (collision.gameObject.CompareTag("VerticalWall"))
+
+        if (collisionObject.CompareTag("VerticalWall")
+            || collisionObject.CompareTag("MousePlatform"))
         {
-            if (playerState == PlayerState.Running)
+            DrawRaycasts();
+
+            if (collisionObject.CompareTag("VerticalWall") && playerState == PlayerState.Running)
             {
                 Die();
             }
-
-            DrawRaycasts();
         }
 
-        if (collision.gameObject.CompareTag("Obstacle"))
+        if (collisionObject.CompareTag("Obstacle"))
         {
             Die();
         }
 
-        if (collision.gameObject.CompareTag("LevelGoal") && playerState != PlayerState.Dead)
+        if (collisionObject.CompareTag("LevelGoal") && playerState != PlayerState.Dead)
         {
             FinishLevel();
         }
@@ -295,14 +323,21 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        var collisionObject = collision.gameObject;
+
+        if (collisionObject.CompareTag("Ground")
+            || collisionObject.CompareTag("MousePlatform"))
         {
             canJump = false;
-            isLosingHealth = false;
+
+            if (collisionObject.CompareTag("MousePlatform"))
+            {
+                isLosingHealth = false;
+            }
         }
 
-        if (collision.gameObject.CompareTag("VerticalWall"))
-        {            
+        if (collisionObject.CompareTag("VerticalWall"))
+        {
             ChangeWallAttatchedState(WallAttatchedState.None);
             ChangePlayerState(PlayerState.Jumping);
         }

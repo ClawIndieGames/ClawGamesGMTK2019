@@ -2826,7 +2826,7 @@ GameObject:
   - component: {fileID: 500716817}
   m_Layer: 0
   m_Name: Platform
-  m_TagString: Ground
+  m_TagString: MousePlatform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2858,7 +2858,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.07385215}
+  m_Offset: {x: 0, y: -0.20576394}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -2869,7 +2869,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.0684838, y: 0.43531704}
+  m_Size: {x: 2.0684838, y: 0.9945493}
   m_EdgeRadius: 0
 --- !u!212 &500716818
 SpriteRenderer:
@@ -7360,7 +7360,7 @@ GameObject:
   - component: {fileID: 1323930855}
   - component: {fileID: 1323930854}
   m_Layer: 0
-  m_Name: MouseObject
+  m_Name: MousePlatform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7386,7 +7386,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1323930853}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 2.833, y: 2.145, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 500716816}
