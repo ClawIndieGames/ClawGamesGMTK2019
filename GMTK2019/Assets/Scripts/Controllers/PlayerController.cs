@@ -180,9 +180,7 @@ public class PlayerController : MonoBehaviour
         if (!canJump)
             return;
 
-        transform.parent = null;
 
-        ChangePlayerState(PlayerState.Jumping);
         canJump = false;
 
         var directionToJump = Vector2.zero;
@@ -204,7 +202,9 @@ public class PlayerController : MonoBehaviour
                 break;
         }
 
+        ChangePlayerState(PlayerState.Jumping);
         rb.velocity = directionToJump;
+        transform.parent = null;
     }
 
     void Die()
@@ -213,7 +213,14 @@ public class PlayerController : MonoBehaviour
             return;
 
         ChangePlayerState(PlayerState.Dead);
+        StartCoroutine(RestartGameCoroutine());
         Destroy(gameObject, 1f);
+    }
+
+    IEnumerator RestartGameCoroutine()
+    {
+        yield return new WaitForSeconds(0.5f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     void Flip()

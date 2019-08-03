@@ -96,7 +96,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-      // If the game has Google integration the  PlayGamesManager LOGIN should be called here
+      
     }
 
     IEnumerator LoadLevelAsync(string sceneName)
@@ -112,16 +112,9 @@ public class GameManager : MonoBehaviour
 
 
     private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SceneManager.LoadScene("prototype");
-        }
+    {        
     }
-    private void OnApplicationQuit()
-    {
-        // If the game has Google integration the  PlayGamesManager LOGOUT should be called here
-    }
+    
     #endregion
 
 }

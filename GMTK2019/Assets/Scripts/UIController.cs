@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UIController : MonoBehaviour
 {
     #region Fields
     [SerializeField] Transform healthBar;
+    [SerializeField] GameObject menu;
     #endregion
 
     #region Private methods
@@ -35,12 +37,14 @@ public class UIController : MonoBehaviour
     {
         PlayerController.OnPlayerLosingHealth += OnPlayerLostHealth;
         PlayerController.OnPlayerHealing += OnPlayerHealed;
+        PlayerController.OnPlayerFinishLevel += OnPlayerFinishLevel;
     }
 
     void UnSubscribeEvents()
     {
         PlayerController.OnPlayerLosingHealth -= OnPlayerLostHealth;
         PlayerController.OnPlayerHealing -= OnPlayerHealed;
+        PlayerController.OnPlayerFinishLevel -= OnPlayerFinishLevel;
 
     }
 
@@ -57,5 +61,34 @@ public class UIController : MonoBehaviour
             healthBar.localScale.x + (heal/ 100f),
             healthBar.localScale.y);
     }
+
+    void OnPlayerFinishLevel()
+    {
+        Cursor.visible = true;
+        menu.SetActive(true);
+    }
+    #endregion
+
+    #region Public methods
+    public void LoadNextLevel()
+    {
+        var currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        var nextScene = SceneManager.GetSceneByBuildIndex(currentSceneIndex + 1);
+
+        if (nextScene != null)
+        {
+            SceneManager.LoadScene(nextScene.name);
+        }
+        else
+        {
+            GoToMainMenu();
+        }
+    }
+
+    public void GoToMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
     #endregion
 }
