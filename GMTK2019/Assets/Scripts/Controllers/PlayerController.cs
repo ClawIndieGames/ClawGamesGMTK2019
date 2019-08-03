@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
         Running,
         Jumping,
         WallRide,
-        Death
+        Dead
     }
 
     public enum WallAttatchedState
@@ -50,6 +50,7 @@ public class PlayerController : MonoBehaviour
 
     public static event Action<float> OnPlayerLosingHealth = delegate { };
     public static event Action<float> OnPlayerHealing = delegate { };
+    public static event Action OnPlayerFinishLevel = delegate { };
 
     #endregion
 
@@ -142,7 +143,7 @@ public class PlayerController : MonoBehaviour
                 animator.SetBool("IsWallRiding", true);
                 break;
 
-            case PlayerState.Death:
+            case PlayerState.Dead:
                 animator.SetBool("IsDead", true);
                 animator.SetBool("IsJumping", false);
                 animator.SetBool("IsRunning", false);
@@ -190,7 +191,7 @@ public class PlayerController : MonoBehaviour
 
     void Die()
     {
-        ChangePlayerState(PlayerState.Death);
+        ChangePlayerState(PlayerState.Dead);
         Destroy(gameObject, 1f);
     }
 
@@ -253,8 +254,9 @@ public class PlayerController : MonoBehaviour
 
     void FinishLevel()
     {
-
+        OnPlayerFinishLevel();
     }
+
     #endregion
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -285,7 +287,7 @@ public class PlayerController : MonoBehaviour
             Die();
         }
 
-        if (collision.gameObject.CompareTag("LevelGoal"))
+        if (collision.gameObject.CompareTag("LevelGoal") && playerState != PlayerState.Dead)
         {
             FinishLevel();
         }
