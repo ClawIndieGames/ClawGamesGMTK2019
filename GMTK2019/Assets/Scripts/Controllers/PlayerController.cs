@@ -297,11 +297,7 @@ public class PlayerController : MonoBehaviour
             || collision.gameObject.CompareTag("MousePlatform"))
         {
             canJump = true;
-
-            if (wallAttatchedState == WallAttatchedState.None)
-            {
-                ChangePlayerState(PlayerState.Running);
-            }
+            ChangePlayerState(PlayerState.Running);            
 
             if (collisionObject.CompareTag("MousePlatform"))
             {
