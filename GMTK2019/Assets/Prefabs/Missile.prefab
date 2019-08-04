@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5594532956003689908}
   - component: {fileID: 7805410498100739386}
   - component: {fileID: 5594532955644682487}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Missile
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
