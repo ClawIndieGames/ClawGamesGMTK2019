@@ -351,6 +351,10 @@ public class PlayerController : MonoBehaviour
             ChangeWallAttatchedState(WallAttatchedState.None);
             ChangePlayerState(PlayerState.Jumping);
         }
+        else if (collisionObject.CompareTag("MousePlatform"))
+        {
+            ChangePlayerState(PlayerState.Running);
+        }
     }
     IEnumerator DelayDisableJumpCoroutine()
     {
