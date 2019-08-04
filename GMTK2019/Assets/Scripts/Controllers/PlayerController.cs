@@ -287,6 +287,13 @@ public class PlayerController : MonoBehaviour
         OnPlayerFinishLevel();
     }
 
+    IEnumerator DelayDisableJumpCoroutine()
+    {
+
+        yield return new WaitForSeconds(0.1f);
+        canJump = false;
+    }
+
     #endregion
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -356,10 +363,5 @@ public class PlayerController : MonoBehaviour
             ChangePlayerState(PlayerState.Running);
         }
     }
-    IEnumerator DelayDisableJumpCoroutine()
-    {
-
-        yield return new WaitForSeconds(0.1f);
-        canJump = false;
-    }
+    
 }
