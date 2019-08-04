@@ -21,7 +21,7 @@ public class MouseObjectController : MonoBehaviour
     {
         screenToWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-        var positionToMove = Vector3.MoveTowards(transform.position, screenToWorld, 100 * Time.fixedDeltaTime);
+        var positionToMove = Vector3.MoveTowards(transform.position, screenToWorld, 1000 * Time.deltaTime);
 
         rb.MovePosition(positionToMove);
     }
