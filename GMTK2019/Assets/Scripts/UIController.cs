@@ -81,5 +81,9 @@ public class UIController : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
+    public void LoadLevel(string levelName)
+    {
+        SceneManager.LoadScene(levelName);        
+    }
     #endregion
 }
