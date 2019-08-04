@@ -76,6 +76,16 @@ public class GameManager : MonoBehaviour
         SetState(GameState.Playing);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
+    public void LoadLevel(string levelName)
+    {
+        SceneManager.LoadScene(levelName);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
     #endregion
 
 
