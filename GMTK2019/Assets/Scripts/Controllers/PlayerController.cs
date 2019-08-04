@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
     #region fields
+    public List<AudioClip> sounds;
+    public AudioSource audioSource;
+
     public enum PlayerState
     {
         Running,
@@ -182,6 +186,7 @@ public class PlayerController : MonoBehaviour
 
 
         canJump = false;
+        PlaySound("Jump");
 
         var directionToJump = Vector2.zero;
         switch (wallAttatchedState)
@@ -212,6 +217,7 @@ public class PlayerController : MonoBehaviour
         if (isInvincible)
             return;
 
+        PlaySound("Death");
         ChangePlayerState(PlayerState.Dead);
         StartCoroutine(RestartGameCoroutine());
         Destroy(gameObject, 1f);
@@ -219,7 +225,7 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator RestartGameCoroutine()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.7f);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -294,6 +300,19 @@ public class PlayerController : MonoBehaviour
         canJump = false;
     }
 
+    void PlaySound(string name)
+    {        
+        if (sounds.Any())
+        {
+            var clip = sounds.Where(s => s.name == name).First();
+            if (clip != null)
+            {
+                audioSource.clip = clip;
+                audioSource.Play();
+            }
+        }
+    }
+
     #endregion
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -362,6 +381,5 @@ public class PlayerController : MonoBehaviour
         {
             ChangePlayerState(PlayerState.Running);
         }
-    }
-    
+    }    
 }

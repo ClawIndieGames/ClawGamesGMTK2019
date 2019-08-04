@@ -9,7 +9,11 @@ public class MissileBehaviour : MonoBehaviour
     public float speed;
     public float rotationSpeed;
     bool canChase;
+    public SpriteRenderer spriteRenderer;
+    public AudioSource audioSource;
+    public PolygonCollider2D collider;
 
+    bool isChasing;
     void Start()
     {
         target = FindObjectOfType<PlayerController>().transform;        
@@ -35,6 +39,8 @@ public class MissileBehaviour : MonoBehaviour
         if (collision.transform.CompareTag("Player"))
         {
             canChase = true;
+            isChasing = true;
+            collider.enabled = true;
         }
     }
 
@@ -43,7 +49,13 @@ public class MissileBehaviour : MonoBehaviour
         if (collision.transform.CompareTag("Player")
             || collision.transform.CompareTag("MousePlatform"))
         {
-            Destroy(gameObject);
+            if (isChasing)
+            {
+                audioSource.Play();
+                spriteRenderer.enabled = false;
+                collider.enabled = false;
+                Destroy(gameObject, 0.7f);
+            }
         }
     }
 }

@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
     public AudioSource audioSource;
     public List<AudioClip> audioClips;
 
+    bool canPlayLevelTheme;
+
     public enum GameState
     {
         Playing,
@@ -123,8 +125,8 @@ public class GameManager : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name == "MainMenu")
         {
-            audioSource.clip = audioClips.Where(m => m.name == "MainMenuTheme").First();
-            audioSource.Play();
+            audioSource.volume = 0.115f;
+            PlaySound("MainMenuTheme");
         } 
     }
 
@@ -148,13 +150,30 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void PlaySound(string name)
+    {
+        audioSource.Stop();
+        audioSource.clip = audioClips.Where(m => m.name == name).First();
+        audioSource.Play();
+    }
+
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "Level1"
             || scene.name == "Level2"
             || scene.name == "Level3")
         {
-            // play theme 
+            if (canPlayLevelTheme)
+            {
+                audioSource.volume = 0.03f;
+                PlaySound("LevelTheme");
+                canPlayLevelTheme = false;
+            }
+        }
+
+        if (scene.name == "MainMenu" || scene.name == "Intro")
+        {
+            canPlayLevelTheme = true;
         }
     }
     
