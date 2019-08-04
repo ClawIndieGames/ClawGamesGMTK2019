@@ -4,12 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Linq;
 
 public class GameManager : MonoBehaviour 
 {
     #region	Fields
     public static GameManager instance = null;
-    
+
+    public AudioSource audioSource;
+    public List<AudioClip> audioClips;
+
     public enum GameState
     {
         Playing,
@@ -97,16 +101,31 @@ public class GameManager : MonoBehaviour
             instance = this;
         }
         else if (instance != this)
-        {
+        {            
             Destroy(gameObject);
         }
 
         DontDestroyOnLoad(gameObject);
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
     }
 
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
     private void Start()
     {
-      
+        if (SceneManager.GetActiveScene().name == "MainMenu")
+        {
+            audioSource.clip = audioClips.Where(m => m.name == "MainMenuTheme").First();
+            audioSource.Play();
+        } 
     }
 
     IEnumerator LoadLevelAsync(string sceneName)
@@ -126,6 +145,16 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             ResetLevel();
+        }
+    }
+
+    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "Level1"
+            || scene.name == "Level2"
+            || scene.name == "Level3")
+        {
+            // play theme 
         }
     }
     
