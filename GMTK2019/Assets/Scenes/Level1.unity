@@ -13577,7 +13577,7 @@ MonoBehaviour:
   movementSpeed: 10
   damageDoneByPlatform: 0.25
   passiveHealing: 0.1
-  wallRideRaycastVector: {x: 0.3, y: 0}
+  wallRideRaycastVector: {x: 0.35, y: 0}
   animator: {fileID: 1822256431}
   topRaycastOrigin: {fileID: 106270353}
   midRaycastOrigin: {fileID: 783846308}

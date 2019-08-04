@@ -251,24 +251,8 @@ public class PlayerController : MonoBehaviour
             {
                 OnAttatchToWall(WallAttatchedState.Left);
             }
-
-            if (midHit.transform != null
-                && midHit.transform.CompareTag("MousePlatform"))
-            {
-                transform.parent = midHit.transform;
-            }
-            else if (topHit.transform != null
-                && topHit.transform.CompareTag("MousePlatform"))
-            {
-                transform.parent = topHit.transform;
-            }
-            else if (bottomHit.transform != null
-                && bottomHit.transform.CompareTag("MousePlatform"))
-            {
-                transform.parent = bottomHit.transform;
-            }
         }
-    }
+    }   
 
     void OnAttatchToWall(WallAttatchedState wall)
     {
@@ -357,20 +341,25 @@ public class PlayerController : MonoBehaviour
 
         if (collisionObject.CompareTag("Ground")
             || collisionObject.CompareTag("MousePlatform"))
-        {
-            canJump = false;
+        {            
+            StartCoroutine(DelayDisableJumpCoroutine());
 
             if (collisionObject.CompareTag("MousePlatform"))
             {
-                isLosingHealth = false;
-                transform.parent = null;
+                isLosingHealth = false;         
             }
         }
 
         if (collisionObject.CompareTag("VerticalWall"))
-        {
+        {            
             ChangeWallAttatchedState(WallAttatchedState.None);
             ChangePlayerState(PlayerState.Jumping);
         }
+    }
+    IEnumerator DelayDisableJumpCoroutine()
+    {
+
+        yield return new WaitForSeconds(0.1f);
+        canJump = false;
     }
 }
