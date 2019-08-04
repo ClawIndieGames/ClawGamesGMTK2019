@@ -11146,7 +11146,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d3c6b72f6aa0ef46a76abb77dab84ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  positionToLock: 4.48
+  YpositionToLock: 4.48
+  XpositionToLock: 0
+  isHorizontalLevel: 1
 --- !u!1 &1421180732
 GameObject:
   m_ObjectHideFlags: 0
