@@ -72,17 +72,8 @@ public class UIController : MonoBehaviour
     #region Public methods
     public void LoadNextLevel()
     {
-        var currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        var nextScene = SceneManager.GetSceneByBuildIndex(currentSceneIndex + 1);
-
-        if (nextScene != null)
-        {
-            SceneManager.LoadScene(nextScene.name);
-        }
-        else
-        {
-            GoToMainMenu();
-        }
+        var nextSceneIndex = SceneManager.GetActiveScene().buildIndex +1;
+        SceneManager.LoadScene(nextSceneIndex);        
     }
 
     public void GoToMainMenu()
