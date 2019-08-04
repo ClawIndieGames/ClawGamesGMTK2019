@@ -5,9 +5,11 @@ using Cinemachine;
 
 [ExecuteInEditMode]
 [SaveDuringPlay]
-public class CameraLockY : CinemachineExtension
+public class CameraLock : CinemachineExtension
 {
-    public float positionToLock;
+    public float YpositionToLock;
+    public float XpositionToLock;
+    public bool isHorizontalLevel = true;
 
     protected override void PostPipelineStageCallback(
         CinemachineVirtualCameraBase vcam,
@@ -16,7 +18,16 @@ public class CameraLockY : CinemachineExtension
         if (stage == CinemachineCore.Stage.Body)
         {
             var pos = state.RawPosition;
-            pos.y = positionToLock;
+
+            if (isHorizontalLevel)
+            {
+                pos.y = YpositionToLock;
+            }
+            else
+            {
+                pos.x = XpositionToLock;
+            }
+
             state.RawPosition = pos;
         }
     }
